@@ -12,10 +12,10 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Set up job
-        run: echo "Setting up deployment job..."
+      # - name: Set up job
+      #   run: echo "Setting up deployment job..."
 
-      - name: actions/checkout@v2
+      - name: Run actions/checkout@v2
         run: echo "Checking out code..."
 
       - name: Configure AWS Credentials
@@ -39,5 +39,5 @@ jobs:
       - name: Post Run actions/checkout@v2
         run: echo "Post checkout cleanup..."
 
-      - name: Complete job
-        run: echo "Deployment simulation completed"
+      # - name: Complete job
+      #   run: echo "Deployment simulation completed"
