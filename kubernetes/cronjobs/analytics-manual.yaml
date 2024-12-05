@@ -1,0 +1,54 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: analytics-manual
+  namespace: healthsync
+spec:
+  schedule: "*/5 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: analytics-aggregator-sa
+          containers:
+          - name: analytics
+            image: python:3.9-slim
+            command:
+            - /bin/bash
+            - -ec
+            args:
+            - |
+              echo "Installing dependencies..."
+              pip install --no-cache-dir boto3 asyncio
+              echo "Starting analytics job..."
+              export REDSHIFT_PASSWORD="YourStrongPassword123!"
+              python -u /app/main.py
+            env:
+            - name: AWS_REGION
+              value: "ap-south-1"
+            - name: PYTHONUNBUFFERED
+              value: "1"
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-credentials
+                  key: access-key
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-credentials
+                  key: secret-key
+            - name: REDSHIFT_CLUSTER
+              value: "healthsync-analytics"
+            - name: REDSHIFT_DATABASE
+              value: "healthsync_analytics"
+            - name: REDSHIFT_USER
+              value: "healthsync_user"
+            volumeMounts:
+            - name: analytics-code
+              mountPath: /app
+          volumes:
+          - name: analytics-code
+            configMap:
+              name: analytics-code-config
+          restartPolicy: Never

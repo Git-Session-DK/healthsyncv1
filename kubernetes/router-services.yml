@@ -1,0 +1,75 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: patient-service-router
+  namespace: healthsync
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "60"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+    service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: "AllowMethods=GET,POST,PUT,DELETE"
+spec:
+  type: LoadBalancer
+  selector:
+    app: patient-service
+    version: blue
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: appointment-service-router
+  namespace: healthsync
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "60"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+    service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: "AllowMethods=GET,POST,PUT,DELETE"
+spec:
+  type: LoadBalancer
+  selector:
+    app: appointment-service
+    version: blue
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service-router
+  namespace: healthsync
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "60"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+    service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: "AllowMethods=GET,POST,PUT,DELETE"
+spec:
+  type: LoadBalancer
+  selector:
+    app: notification-service
+    version: blue
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: aggregator-service-router
+  namespace: healthsync
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "60"
+    service.beta.kubernetes.io/aws-load-balancer-cross-zone-load-balancing-enabled: "true"
+    service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: "AllowMethods=GET,POST,PUT,DELETE"
+spec:
+  type: LoadBalancer
+  selector:
+    app: aggregator-service
+    version: blue
+  ports:
+  - port: 80
+    targetPort: 80
+    protocol: TCP

@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: analytics-aggregator
+  namespace: healthsync
+spec:
+  schedule: "0 1 * * *"  # Runs daily at 1 AM
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: analytics-aggregator-sa
+          containers:
+          - name: analytics-aggregator
+            image: 961341545391.dkr.ecr.ap-south-1.amazonaws.com/healthsync-analytics:2065d967bb680a3847908565a1e797a20e9ef576
+            command: ["python", "main.py"]
+            resources:
+              requests:
+                memory: "512Mi"
+                cpu: "250m"
+              limits:
+                memory: "1Gi"
+                cpu: "500m"
+          restartPolicy: OnFailure

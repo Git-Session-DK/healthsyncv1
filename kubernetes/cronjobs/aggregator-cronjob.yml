@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: data-aggregator
+  namespace: healthsync
+spec:
+  schedule: "0 0 * * *"  # Runs daily at midnight
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          serviceAccountName: aggregator-service
+          containers:
+          - name: aggregator
+            image: 961341545391.dkr.ecr.ap-south-1.amazonaws.com/healthsync-aggregator-service:2065d967bb680a3847908565a1e797a20e9ef576
+            command: ["python", "main.py"]
+            env:
+              - name: AWS_REGION
+                value: "ap-south-1"
+              - name: DYNAMODB_APPOINTMENTS_TABLE
+                value: "Appointments"
+              - name: DYNAMODB_PATIENTS_TABLE
+                value: "PatientRecords"
+              - name: REDSHIFT_CLUSTER
+                value: "healthsync-analytics"
+              - name: REDSHIFT_DATABASE
+                value: "healthsync_analytics"
+              - name: REDSHIFT_USER
+                value: "healthsync_user"
+            resources:
+              requests:
+                memory: "512Mi"
+                cpu: "250m"
+              limits:
+                memory: "1Gi"
+                cpu: "500m"
+          restartPolicy: OnFailure

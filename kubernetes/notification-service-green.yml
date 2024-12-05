@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service-green
+  namespace: healthsync
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: notification-service
+      version: green
+  template:
+    metadata:
+      labels:
+        app: notification-service
+        version: green
+    spec:
+      containers:
+      - name: notification-service
+        image: 961341545391.dkr.ecr.ap-south-1.amazonaws.com/healthsync-notification-service:latest
+        env:
+          - name: AWS_DEFAULT_REGION
+            value: "ap-south-1"
+          - name: AWS_REGION
+            value: "ap-south-1"
+        ports:
+        - containerPort: 80
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 80
+          initialDelaySeconds: 15
+          periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service-green
+  namespace: healthsync
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: "60"
+spec:
+  type: LoadBalancer
+  selector:
+    app: notification-service
+    version: green
+  ports:
+  - port: 80
+    targetPort: 80
