@@ -10,10 +10,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository
-      - uses: actions/checkout@v2
+      - name: Checkout Code
+        uses: actions/checkout@v2
 
-      # Set up AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -21,29 +20,26 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
 
-      # Unit Test Step (this step would run actual tests in a real scenario)
-      - name: Run Unit Tests
+      - name: Run Integration Tests
+        id: int-test
         run: |
-          echo "Running Unit Tests... (This is just a placeholder)"
-          # Normally, this would be: pytest tests/
-      
-      # Login to Amazon ECR
+          echo "Running integration tests for the patient record service"
+          # Replace the following command with your actual test runner command
+          cd ./patient_record_service && ./run_tests.sh
+          echo "Integration tests completed successfully"
+
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
 
-      # Build and Push Docker Image (this step would perform real Docker build & push in a real scenario)
       - name: Build and Push Docker Image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          echo "Building and Pushing Docker Image... (This is just a placeholder)"
-          # Normally, this would be:
-          # docker build -t $ECR_REGISTRY/healthsync-patient-service:$GITHUB_SHA ./patient_record_service
-          # docker push $ECR_REGISTRY/healthsync-patient-service:$GITHUB_SHA
-          # docker tag $ECR_REGISTRY/healthsync-patient-service:$GITHUB_SHA $ECR_REGISTRY/healthsync-patient-service:latest
-          # docker push $ECR_REGISTRY/healthsync-patient-service:latest
-
-      # Mark completion
-      - name: Complete Workflow
-        run: echo "Workflow has completed successfully without executing the actual tasks."
+          echo "Building image: $ECR_REGISTRY/healthsync-patient-service:$GITHUB_SHA"
+          docker build -t $ECR_REGISTRY/healthsync-patient-service:$GITHUB_SHA ./patient_record_service
+          echo "Pushing image: $ECR_REGISTRY/healthsync-patient-service:$GITHUB_SHA"
+          docker push $ECR_REGISTRY/healthsync-patient-service:$GITHUB_SHA
+          echo "Tagging image as latest: $ECR_REGISTRY/healthsync-patient-service:latest"
+          docker tag $ECR_REGISTRY/healthsync-patient-service:$GITHUB_SHA $ECR_REGISTRY/healthsync-patient-service:latest
+          docker push $ECR_REGISTRY/healthsync-patient-service:latest
