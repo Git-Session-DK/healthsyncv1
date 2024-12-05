@@ -1,4 +1,4 @@
-name: Patient Service CI Test
+name: Patient Service CI
 
 on:
   push:
@@ -6,35 +6,44 @@ on:
       - 'patient_record_service/**'
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
+
     steps:
+      # Checkout the repository
       - uses: actions/checkout@v2
 
-      - name: Mock AWS Credentials
-        run: |
-          echo "Using mock AWS credentials"
-          echo "AWS_ACCESS_KEY_ID=mock-key" >> $GITHUB_ENV
-          echo "AWS_SECRET_ACCESS_KEY=mock-secret" >> $GITHUB_ENV
-          echo "AWS_REGION=ap-south-1" >> $GITHUB_ENV
+      # Set up AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
 
-      - name: Mock ECR Login
+      # Unit Test Step (this step would run actual tests in a real scenario)
+      - name: Run Unit Tests
+        run: |
+          echo "Running Unit Tests... (This is just a placeholder)"
+          # Normally, this would be: pytest tests/
+      
+      # Login to Amazon ECR
+      - name: Login to Amazon ECR
         id: login-ecr
-        run: |
-          echo "::set-output name=registry::mock-registry.dkr.ecr.ap-south-1.amazonaws.com"
+        uses: aws-actions/amazon-ecr-login@v1
 
-      - name: Simulate Build and Push
+      # Build and Push Docker Image (this step would perform real Docker build & push in a real scenario)
+      - name: Build and Push Docker Image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
-          echo "Building image: $ECR_REGISTRY/healthsync-patient-service:$GITHUB_SHA"
-          echo "Would execute: docker build -t $ECR_REGISTRY/healthsync-patient-service:$GITHUB_SHA ./patient_record_service"
-          echo "Would push to: $ECR_REGISTRY/healthsync-patient-service:$GITHUB_SHA"
-          echo "Would tag as: $ECR_REGISTRY/healthsync-patient-service:latest"
-          echo "Would push latest tag"
+          echo "Building and Pushing Docker Image... (This is just a placeholder)"
+          # Normally, this would be:
+          # docker build -t $ECR_REGISTRY/healthsync-patient-service:$GITHUB_SHA ./patient_record_service
+          # docker push $ECR_REGISTRY/healthsync-patient-service:$GITHUB_SHA
+          # docker tag $ECR_REGISTRY/healthsync-patient-service:$GITHUB_SHA $ECR_REGISTRY/healthsync-patient-service:latest
+          # docker push $ECR_REGISTRY/healthsync-patient-service:latest
 
-      - name: Verify Simulation
-        run: |
-          echo "Simulation completed successfully"
-          echo "Image would be available at: $ECR_REGISTRY/healthsync-patient-service:$GITHUB_SHA"
-          echo "Latest tag would be updated"
+      # Mark completion
+      - name: Complete Workflow
+        run: echo "Workflow has completed successfully without executing the actual tasks."
