@@ -13,19 +13,19 @@ jobs:
       - name: Run Unit Tests
         run: echo "Running notification service unit tests..."
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS credentials
         run: echo "Configuring mock AWS credentials..."
 
       - name: Login to Amazon ECR
         run: echo "Simulating ECR login..."
 
-      - name: Build and Push
+      - name: Build and push
         run: echo "Simulating build and push for notification service..."
 
       - name: Post Login to Amazon ECR
         run: echo "Post ECR login cleanup..."
 
-      - name: Post Configure AWS Credentials
+      - name: Post Configure AWS credentials
         run: echo "Post AWS credentials cleanup..."
 
       - name: Post Run actions/checkout@v2

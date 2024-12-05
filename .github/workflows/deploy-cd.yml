@@ -18,7 +18,7 @@ jobs:
       - name: Run actions/checkout@v2
         run: echo "Checking out code..."
 
-      - name: Configure AWS Credentials
+      - name: Configure AWS credentials
         run: echo "Configuring mock AWS credentials..."
 
       - name: Update kube config
@@ -33,7 +33,7 @@ jobs:
       - name: Verify deployments
         run: echo "Verifying deployments..."
 
-      - name: Post Configure AWS Credentials
+      - name: Post Configure AWS credentials
         run: echo "Post AWS credentials cleanup..."
 
       - name: Post Run actions/checkout@v2
