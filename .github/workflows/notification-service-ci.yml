@@ -4,10 +4,10 @@ on:
     paths:
       - 'notification_service/**'
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: actions/checkout@v2
+      - name: Run actions/checkout@v2
         run: echo "Checking out code..."
 
       - name: Run Unit Tests
@@ -31,5 +31,5 @@ jobs:
       - name: Post Run actions/checkout@v2
         run: echo "Post checkout cleanup..."
 
-      - name: Complete job
-        run: echo "Notification service CI simulation completed"
+      # - name: Complete job
+      #   run: echo "Notification service CI simulation completed"

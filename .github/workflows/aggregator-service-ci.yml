@@ -4,7 +4,7 @@ on:
     paths:
       - 'aggregator_service/**'
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: actions/checkout@v2
@@ -31,5 +31,5 @@ jobs:
       - name: Post Run actions/checkout@v2
         run: echo "Post checkout cleanup..."
 
-      - name: Complete job
-        run: echo "Aggregator service CI simulation completed"
+      # - name: Complete job
+      #   run: echo "Aggregator service CI simulation completed"

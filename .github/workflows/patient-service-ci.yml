@@ -4,7 +4,7 @@ on:
     paths:
       - 'patient_record_service/**'
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Run actions/checkout@v2
