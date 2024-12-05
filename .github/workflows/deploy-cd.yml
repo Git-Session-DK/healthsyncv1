@@ -1,0 +1,58 @@
+name: Deploy to EKS
+
+on:
+  workflow_run:
+    workflows:
+      - "Patient Service CI"
+      - "Appointment Service CI"
+      - "Notification Service CI"
+      - "Aggregator Service CI"
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Update kube config
+        run: aws eks update-kubeconfig --name healthsync-cluster --region ap-south-1
+
+      - name: Update deployment files with SHA
+        run: |
+          sed -i "s|:latest|:${{ github.sha }}|g" kubernetes/*-blue.yml
+          sed -i "s|:latest|:${{ github.sha }}|g" kubernetes/*-green.yml
+
+      - name: Deploy to EKS
+        run: |
+          kubectl apply -f kubernetes/patient-service-blue.yml -n healthsync
+          kubectl apply -f kubernetes/patient-service-green.yml -n healthsync
+          kubectl apply -f kubernetes/appointment-service-blue.yml -n healthsync
+          kubectl apply -f kubernetes/appointment-service-green.yml -n healthsync
+          kubectl apply -f kubernetes/notification-service-blue.yml -n healthsync
+          kubectl apply -f kubernetes/notification-service-green.yml -n healthsync
+          kubectl apply -f kubernetes/aggregator-service-blue.yml -n healthsync
+          kubectl apply -f kubernetes/aggregator-service-green.yml -n healthsync
+          kubectl apply -f kubernetes/router-services.yml -n healthsync
+
+      - name: Verify deployments
+        run: |
+          kubectl rollout status deployment/patient-service-blue -n healthsync
+          kubectl rollout status deployment/patient-service-green -n healthsync
+          kubectl rollout status deployment/appointment-service-blue -n healthsync
+          kubectl rollout status deployment/appointment-service-green -n healthsync
+          kubectl rollout status deployment/notification-service-blue -n healthsync
+          kubectl rollout status deployment/notification-service-green -n healthsync
+          kubectl rollout status deployment/aggregator-service-blue -n healthsync
+          kubectl rollout status deployment/aggregator-service-green -n healthsync
+  
+  
