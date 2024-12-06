@@ -10,6 +10,12 @@ jobs:
       - name: Run actions/checkout@v2
         run: echo "Checking out code..."
 
+      - name: Set up Python
+        run: echo "Setting up Python and installing dependencies..."
+
+      - name: Install Dependencies
+        run: echo "Setting up Python and installing dependencies..."
+        
       - name: Run Unit Tests
         run: echo "Running notification service unit tests..."
 
