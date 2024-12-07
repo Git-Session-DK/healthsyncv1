@@ -1,6 +1,6 @@
-# **Runbook: Comprehensive Guide for Deploying and Testing the MediTrack Platform**
+# **Runbook: Guide for Deploying and Testing the MediTrack Platform**
 
-This document provides a detailed and professional step-by-step approach to deploy, test, and maintain the MediTrack platform using Amazon EKS, Kubernetes, and GitHub Actions. The solution ensures scalability, fault tolerance, and efficient automation in a microservices architecture. 
+This document provides a detailed and step-by-step approach to deploy, test, and maintain the MediTrack platform using Amazon EKS, Kubernetes, and GitHub Actions. The solution ensures scalability, fault tolerance, and efficient automation in a microservices architecture. 
 
 ---
 
@@ -45,11 +45,21 @@ This document provides a detailed and professional step-by-step approach to depl
 ### **Step 1: Clone the Repository**
 1. Clone the MediTrack repository to your local environment:
     ```bash
-    git clone https://github.com/<username>/meditrack-platform.git
-    cd meditrack-platform
+    git clone https://github.com/<username>/healthsync.git
+    cd healthsync
     ```
 
-### **Step 2: Build Docker Images**
+### **Step 2: AWS Configuration**
+1. Clone the MediTrack repository to your local environment:
+    ```bash
+    aws configure
+    # Enter your AWS Access Key
+    # Enter your AWS Secret Key
+    # Region: ap-south-1
+    # Output format: json
+    ```
+
+### **Step 3: Build Docker Images**
 1. Navigate to the microservices folder:
     ```bash
     cd services/
@@ -69,13 +79,18 @@ This document provides a detailed and professional step-by-step approach to depl
 ### **Step 3: Deploy to Kubernetes**
 1. Apply Kubernetes manifests for microservices:
     ```bash
-    kubectl apply -f kubernetes/patient-service.yml
-    kubectl apply -f kubernetes/appointment-service.yml
-    kubectl apply -f kubernetes/notification-service.yml
+    kubectl apply -f kubernetes/patient-service-blue.yml -n healthsync
+    kubectl apply -f kubernetes/patient-service-green.yml -n healthsync
+    kubectl apply -f kubernetes/appointment-service-blue.yml -n healthsync
+    kubectl apply -f kubernetes/appointment-service-green.yml -n healthsync
+    kubectl apply -f kubernetes/notification-service-blue.yml -n healthsync
+    kubectl apply -f kubernetes/notification-service-green.yml -n healthsync
+    kubectl apply -f kubernetes/aggregator-service-blue.yml -n healthsync
+    kubectl apply -f kubernetes/aggregator-service-green.yml -n healthsync
     ```
 2. Deploy blue-green strategy for traffic management:
     ```bash
-    kubectl apply -f kubernetes/router.yml
+    kubectl apply -f kubernetes/router-services.yml -n healthsync
     ```
 
 ### **Step 4: Verify Deployment**
@@ -85,7 +100,7 @@ This document provides a detailed and professional step-by-step approach to depl
     ```
 2. Retrieve service endpoints:
     ```bash
-    kubectl get svc -n healthsync
+    kubectl get services -n healthsync
     ```
 
 ---
@@ -118,7 +133,7 @@ This document provides a detailed and professional step-by-step approach to depl
 ### **Step 3: Monitoring and Metrics**
 1. Access Prometheus and Grafana dashboards:
     ```bash
-    kubectl port-forward svc/prometheus-stack-grafana 3000:80 -n monitoring
+    kubectl port-forward svc/prometheus-grafana -n monitoring 3000:80
     ```
 2. Login credentials:
    - Default Username: `admin`
@@ -145,9 +160,10 @@ This document provides a detailed and professional step-by-step approach to depl
 ### **Step 2: Visualization with AWS QuickSight**
 1. Create datasets from Redshift tables.
 2. Build dashboards for:
-   - Appointment trends.
-   - Patient demographics.
    - Doctor performance metrics.
+   - Speciality Insights and Symptom Analysis
+   - Appointment trends.
+   
 
 ---
 
@@ -196,17 +212,18 @@ In case of failures, revert to a stable deployment using the blue-green approach
 ## **7. Key File Structure**
 
 - **Source Code**:
-  - `/services/`
-    - Patient Service: `patient_service.py`
-    - Appointment Service: `appointment_service.py`
-    - Notification Service: `notification_service.py`
+  - `/healthsync/`
+    - patient_record_service
+    - appointment_scheduling_service
+    - notification_service
+    - aggregator_service
 - **Kubernetes Manifests**:
   - `/kubernetes/`
     - Deployment files for services.
     - Router configuration.
 - **CI/CD Pipelines**:
   - `/.github/workflows/`
-    - `ci-pipeline.yml`
+    - `servicename-service-ci.yml`
     - `deploy-cd.yml`
 - **Test Suite**:
   - `/tests/`
