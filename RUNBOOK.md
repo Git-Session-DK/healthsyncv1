@@ -60,23 +60,32 @@ This document provides a detailed and step-by-step approach to deploy, test, and
     ```
 
 ### **Step 3: Build Docker Images**
-1. Navigate to the microservices folder:
+1. Login to Amazon ECR: Use AWS CLI to log in to Amazon ECR:
     ```bash
-    cd services/
+    aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin <ecr-repo-url>
     ```
 2. Build and tag Docker images for each service:
     ```bash
-    docker build -t <ecr-repo-url>:patient-service .
-    docker build -t <ecr-repo-url>:appointment-service .
-    docker build -t <ecr-repo-url>:notification-service .
-    ```
-3. Push images to Amazon ECR:
-    ```bash
-    aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin <ecr-repo-url>
-    docker push <ecr-repo-url>:patient-service
+    cd healthsync/patient_service
+    docker build -t <ecr-repo-url>/patient-service:latest .
+    docker push <ecr-repo-url>/patient-service:latest
+    
+    cd ../appointment_service
+    docker build -t <ecr-repo-url>/appointment-service:latest .
+    docker push <ecr-repo-url>/appointment-service:latest
+    
+    cd ../notification_service
+    docker build -t <ecr-repo-url>/notification-service:latest .
+    docker push <ecr-repo-url>/notification-service:latest
+
+    cd ../aggregator_service
+    docker build -t <ecr-repo-url>/aggregator-service:latest .
+    docker push <ecr-repo-url>/aggregator-service:latest
+    
     ```
 
-### **Step 3: Deploy to Kubernetes**
+
+### **Step 4: Deploy to Kubernetes**
 1. Apply Kubernetes manifests for microservices:
     ```bash
     kubectl apply -f kubernetes/patient-service-blue.yml -n healthsync
@@ -93,7 +102,7 @@ This document provides a detailed and step-by-step approach to deploy, test, and
     kubectl apply -f kubernetes/router-services.yml -n healthsync
     ```
 
-### **Step 4: Verify Deployment**
+### **Step 5: Verify Deployment**
 1. Check pod statuses:
     ```bash
     kubectl get pods -n healthsync
