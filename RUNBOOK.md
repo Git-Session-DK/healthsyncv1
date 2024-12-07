@@ -186,7 +186,7 @@ In case of failures, revert to a stable deployment using the blue-green approach
     ```
 2. Redirect traffic to the blue environment:
     ```bash
-    kubectl edit svc patient-service-router -n healthsync
+    kubectl edit svc patient-service-blue -n healthsync
     ```
 
 ---
