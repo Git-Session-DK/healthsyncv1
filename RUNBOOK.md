@@ -118,7 +118,7 @@ This document provides a detailed and step-by-step approach to deploy, test, and
 ## **3. Post-Deployment Testing**
 
 ### **Step 1: API Validation**
-- Test microservice endpoints using Postman or `curl`:
+- Test microservice endpoints using Postman/Thunder Client or `curl`:
     - **Patient Service**:
         ```bash
         curl -X POST <load-balancer-url>/patients/ -d '<json-data>'
@@ -130,7 +130,7 @@ This document provides a detailed and step-by-step approach to deploy, test, and
         ```
     - **Notification Service**:
         ```bash
-        curl <load-balancer-url>/notifications/test
+        curl -X POST <load-balancer-url>/notifications/appointment reminder/ -d '<json-data>'
         ```
 
 ### **Step 2: Automated Test Execution**
