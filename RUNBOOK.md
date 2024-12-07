@@ -1,4 +1,5 @@
 # **Runbook: Guide for Deploying and Testing the MediTrack Platform**
+![External Image](https://www.appletechsoft.com/wp-content/uploads/2020/06/Hospital-Management-System.jpg)
 
 This document provides a detailed and step-by-step approach to deploy, test, and maintain the MediTrack platform using Amazon EKS, Kubernetes, and GitHub Actions. The solution ensures scalability, fault tolerance, and efficient automation in a microservices architecture. 
 
